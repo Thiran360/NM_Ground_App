@@ -112,7 +112,7 @@ export default function RegisterScreen() {
           <View style={styles.header}>
             <View style={[styles.logoContainer, { backgroundColor: 'rgba(0,0,0,0.5)', shadowColor: tintColor }]}>
               <Image 
-                source={require('@/assets/images/nm_greens_logo_new.png')} 
+                source={require('../../assets/images/nm_greens_new_logo.png')} 
                 style={{ width: 85, height: 85 }} 
                 resizeMode="contain"
               />

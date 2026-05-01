@@ -174,7 +174,7 @@ export default function LoginScreen() {
               animatedLogoStyle
             ]}>
               <Image 
-                source={require('@/assets/images/nm_greens_logo_new.png')} 
+                source={require('../../assets/images/nm_greens_new_logo.png')} 
                 style={{ width: 110, height: 110 }} 
                 resizeMode="contain"
               />

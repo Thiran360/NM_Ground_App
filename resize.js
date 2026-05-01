@@ -1,31 +1,42 @@
 const { Jimp } = require('jimp');
+const fs = require('fs');
 const path = require('path');
 
-async function processImages() {
-  const files = [
-    'ground_a_premium.png',
-    'gokul_avatar.png',
-    'sunil_avatar.png',
-    'sriraj_avatar.png',
-    'ground_b_premium.png',
-    'player_hitting_six.png',
-    'stadium_header.png'
-  ];
+const imagesDir = path.join(__dirname, 'assets/images');
+
+async function processAllImages() {
+  const files = fs.readdirSync(imagesDir);
   
   for (const file of files) {
-    const filePath = path.join(__dirname, 'assets/images', file);
+    if (!file.match(/\.(png|jpg|jpeg)$/i)) continue;
+    
+    const filePath = path.join(imagesDir, file);
     try {
       const image = await Jimp.read(filePath);
+      const originalSize = fs.statSync(filePath).size;
       
-      // Aggressively resize to max 300px width for avatars and cards to reduce uncompressed png sizes
-      image.resize({ w: 300 });
+      console.log(`Processing ${file} (Original: ${(originalSize / 1024).toFixed(2)} KB)`);
+      
+      let width = image.bitmap.width;
+      
+      // Aggressive resizing for all images to ensure they stay in KB range
+      if (width > 600) width = 600;
+      if (file.includes('logo') || file.includes('icon')) width = Math.min(width, 256);
+      if (file.includes('avatar')) width = Math.min(width, 150);
+
+      image.resize({ w: width });
+      
+      // Save with lower quality
+      // Jimp v1 uses .write(path, { quality: 50 }) or similar?
+      // Actually, let's just use resize as the primary driver.
       
       await image.write(filePath);
-      console.log('Shrunk ' + file);
+      const newSize = fs.statSync(filePath).size;
+      console.log(`Done ${file} (New: ${(newSize / 1024).toFixed(2)} KB)`);
     } catch (e) {
-      console.error('Error processing ' + file + ':', e.message);
+      console.error(`Error processing ${file}:`, e.message);
     }
   }
 }
 
-processImages();
+processAllImages();
